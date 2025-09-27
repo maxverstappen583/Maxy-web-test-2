@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Maxy — Command Dashboard</title>
+
+  <!-- Font Awesome for icons and Lottie player CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+  <style>
+    /* Basic reset */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#000;color:#efe9ff}
+    body{
+      /* Put your galaxy image filename here in the same folder */
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.35), rgba(0,0,0,0.6)),
+                  url('C1A7E1F3-7712-4EF5-B609-D942681318AD.jpeg') center/cover no-repeat;
+      -webkit-font-smoothing:antialiased;
+      padding:28px; display:flex; align-items:flex-start; justify-content:center;
+    }
+
+    /* Container */
+    .container{
+      width:1200px; max-width:96%;
+      background: linear-gradient(180deg, rgba(14,6,28,0.45), rgba(8,3,18,0.45));
+      border-radius:16px; padding:20px; box-shadow:0 12px 40px rgba(0,0,0,0.6);
+      border:1px solid rgba(255,255,255,0.04);
+    }
+
+    header{ display:flex; align-items:center; gap:16px; margin-bottom:12px; }
+    .logo{
+      width:72px; height:72px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:800; font-size:30px; color:#f3e8ff;
+      background: linear-gradient(135deg,#5f2c82,#8a2be2);
+      box-shadow: 0 8px 28px rgba(120,20,180,0.2);
+    }
+
+    .title-wrap{ display:flex; flex-direction:column; gap:4px; }
+    h1{ margin:0; font-size:20px; letter-spacing:0.4px; color:#fff }
+    .lead{ margin:0; opacity:0.85; font-size:13px }
+
+    /* Invite button top-right */
+    .top-actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+    .invite-btn{
+      display:inline-flex; gap:10px; align-items:center; padding:10px 14px;
+      background: linear-gradient(90deg,#7a2be2,#a14be8); color:white; border-radius:12px;
+      text-decoration:none; font-weight:700; border:1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 8px 30px rgba(120,22,180,0.18); transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+    .invite-btn:hover{ transform: translateY(-4px); box-shadow: 0 18px 50px rgba(120,22,180,0.28); }
+    .invite-btn i{ font-size:15px }
+
+    /* layout grid */
+    .grid{ display:grid; grid-template-columns:320px 1fr; gap:18px; align-items:start; }
+    .sidebar{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px; padding:12px; border:1px solid rgba(255,255,255,0.02);
+      max-height:760px; overflow:auto;
+    }
+    .category-btn{
+      display:flex; gap:12px; align-items:center; padding:8px; border-radius:10px; cursor:pointer;
+      margin-bottom:8px; transition: all 220ms cubic-bezier(.2,.9,.2,1); border:1px solid transparent;
+    }
+    .category-btn:hover{ transform:translateX(6px); background:rgba(255,255,255,0.02); border-color: rgba(255,255,255,0.02); }
+    .category-btn.active{ background: linear-gradient(90deg, rgba(138,43,226,0.12), rgba(99,14,121,0.08)); box-shadow: inset 0 -6px 18px rgba(80,0,120,0.06); border-color: rgba(200,150,255,0.06); }
+
+    .cat-icon{ width:56px; height:56px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.02); overflow:hidden }
+    lottie-player.cat-lottie{ width:52px; height:52px; display:block; }
+
+    .cat-title{ font-weight:700; font-size:14px }
+    .cat-sub{ font-size:12px; opacity:0.78; margin-top:4px }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px; padding:14px; min-height:480px; max-height:760px; overflow:auto; border:1px solid rgba(255,255,255,0.02);
+    }
+
+    .category-header{ display:flex; gap:12px; align-items:center; margin-bottom:16px }
+    .big-icon{ width:84px; height:84px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:linear-gradient(90deg, rgba(138,43,226,0.12), rgba(99,14,121,0.08)); border:1px solid rgba(255,255,255,0.03); overflow:hidden }
+    lottie-player.big-lottie{ width:68px; height:68px; display:block; }
+
+    .cmd-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px; }
+    .cmd-card{
+      padding:12px; border-radius:10px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.02);
+      transition: transform 220ms cubic-bezier(.2,.9,.2,1), box-shadow 220ms cubic-bezier(.2,.9,.2,1), border-color 220ms;
+      cursor:pointer; position:relative; overflow:hidden;
+    }
+
+    /* Hover animation: stronger scale + glow */
+    .cmd-card:hover{
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(96,0,160,0.18);
+      border-color: rgba(150,120,255,0.12);
+    }
+
+    .cmd-name{ font-weight:800; font-size:13px; color:#fff }
+    .cmd-desc{ font-size:12px; opacity:0.8; margin-top:8px; color:#e8dcff }
+
+    /* small toolbar & search */
+    .toolbar{ display:flex; gap:12px; align-items:center; margin-bottom:12px }
+    .search{ display:flex; gap:8px; align-items:center; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.02); flex:1 }
+    .search input{ background:transparent; border:0; outline:none; color:inherit; width:100%; font-size:13px }
+
+    .btn-mini{ padding:8px 10px; border-radius:10px; cursor:pointer; background:linear-gradient(90deg, rgba(138,43,226,0.12), rgba(99,14,121,0.06)); border:1px solid rgba(255,255,255,0.03); color:#fff; font-weight:700 }
+
+    footer{ margin-top:12px; text-align:center; color:#dcd0ff; opacity:0.95; font-size:13px }
+
+    @media (max-width:980px){
+      .grid{ grid-template-columns: 1fr }
+      .sidebar{ order:2 }
+      .panel{ order:1 }
+      .top-actions{ margin-left:0 }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" role="application" aria-label="Maxy command dashboard">
+    <header>
+      <div class="logo">M</div>
+      <div class="title-wrap">
+        <h1>Maxy — Command Dashboard</h1>
+        <div class="lead">Interactive command guide · Made with ❤️ by Max</div>
+      </div>
+
+      <div class="top-actions" role="region" aria-label="Top actions">
+        <!-- Invite button -->
+        <a class="invite-btn" id="inviteBtn" href="https://discord.com/oauth2/authorize?client_id=1408075564853493811&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener noreferrer" title="Invite Maxy to your server">
+          <i class="fa-brands fa-discord"></i> Invite Maxy
+        </a>
+      </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search" title="Search commands or categories">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input id="search" placeholder="Search commands, categories, or keywords…" aria-label="Search commands">
+      </div>
+      <button id="expandAll" class="btn-mini" title="Highlight categories">Highlight</button>
+      <button id="collapseAll" class="btn-mini" title="Reset categories">Reset</button>
+    </div>
+
+    <div class="grid">
+      <!-- Sidebar categories -->
+      <aside class="sidebar" id="sidebar" aria-label="Categories">
+        <!-- Injected by JS -->
+      </aside>
+
+      <!-- Main panel -->
+      <main class="panel" id="mainPanel" aria-live="polite">
+        <div class="category-header">
+          <div class="big-icon" id="activeIcon">
+            <!-- small lottie in header -->
+            <lottie-player class="big-lottie" src="data:application/json;base64,eyJ2IjoiNS43LjQiLCJmciI6MzAsImlwIjowLCJvcCI6NjAsInd0IjoxODAsImhkIjozMDAwLCJuIjoiZGVmYXVsdCIsImRkZCI6MCwiYXNzZXRzIjpbXSwibGF5ZXJzIjpbeyJkZGQiOjAsImluZCI6MSwidHkiOjQsIm5tIjoiYWRkIiwic3IiOjEsImtzIjp7Im8iOnsiYSI6MCwiciI6MTAwLCJrIjoxMDB9fSwic2giOlt7InR5IjoiZWwiLCJwIjp7ImEiOjAsImsiOlsxMCwxMF19LCJzIjp7ImEiOjAsImsiIjpbNjAsNjBdLCJuIjoiZWxsaXBzZSJ9LH0seyJ0eSI6ImZsIiwiYyI6eyJhIjowLjgsImsiOlsxLjAsMC41XX0sIm8iOnsiYSI6MCwiciI6MTAwLCJrIjoxMDB9LCJuIjoiaW5mbyJ9XSwiZXhwIjowLCJvcCI6NjAsIm5tIjoibWFpbiJ9XSwibWFya2VycyI6W119" background="transparent" speed="1" loop autoplay></lottie-player>
+          </div>
+          <div>
+            <div id="activeTitle" style="font-weight:900;font-size:18px">All Commands</div>
+            <div id="activeSubtitle" style="opacity:0.85;font-size:13px">Search, browse, and copy commands — click any command to copy it</div>
+          </div>
+        </div>
+
+        <div id="cmdArea" class="cmd-grid" aria-live="polite">
+          <!-- Commands injected by JS -->
+        </div>
+      </main>
+    </div>
+
+    <footer>Made with ❤️ by Max — All commands in one place</footer>
+  </div>
+
+  <script>
+    // ------------- Categories (icons & small Lottie placeholders) -------------
+    const categories = [
+      { id: 'all', title: 'All Commands', icon: 'fa-list', subtitle: 'Every command you provided', lottie: null },
+      { id: 'moderation', title: 'Moderation', icon: 'fa-gavel', subtitle: 'ban, kick, warns, nuke, impersonate', lottie: null },
+      { id: 'antinuke', title: 'Antinuke & Automod', icon: 'fa-shield-halved', subtitle: 'antinuke, automod, sanitize, autowipe', lottie: null },
+      { id: 'roles', title: 'Roles', icon: 'fa-users-gear', subtitle: 'roles, boosters, mass operations', lottie: null },
+      { id: 'logging', title: 'Logging & Admin', icon: 'fa-file-lines', subtitle: 'adm logs, logs setup, usage', lottie: null },
+      { id: 'levels', title: 'Levels & Stats', icon: 'fa-chart-line', subtitle: 'XP, leaderboards, messages stats', lottie: null },
+      { id: 'fun', title: 'Fun & Social', icon: 'fa-dice', subtitle: 'rps, dice, coinflip, meme', lottie: null },
+      { id: 'giveaways', title: 'Giveaways', icon: 'fa-gift', subtitle: 'start, end, list', lottie: null },
+      { id: 'utility', title: 'Utility & Tools', icon: 'fa-wrench', subtitle: 'base64, sha256, qr, profile', lottie: null },
+      { id: 'images', title: 'Image & Attach', icon: 'fa-image', subtitle: 'imageonly, steal, embed', lottie: null },
+      { id: 'stickies_tags', title: 'Stickies & Tags', icon: 'fa-thumbtack', subtitle: 'sticky & tag system', lottie: null },
+      { id: 'invites', title: 'Invites & Leaderboards', icon: 'fa-user-plus', subtitle: 'invite tracking & leaderboards', lottie: null },
+      { id: 'voice', title: 'Voice & VC', icon: 'fa-headset', subtitle: 'voice setup & settings', lottie: null },
+      { id: 'misc', title: 'Misc & Advanced', icon: 'fa-gear', subtitle: 'misc developer tools', lottie: null }
+    ];
+
+    // ------------- Full command list (all commands you provided) -------------
+    const allCommands = [
+      "hackban","changelog","channel clone","channel create","channel delete","myid","testemoji","coinflip","rps","dice","invites","unban",
+      "category clone","profile banner","announce","help","untimeout","unmute","cleanuser","base64","ghostping add","ghostping list","ghostping remove",
+      "activity","botinfo","autowipeuser","category create","category delete","cleanabots","device","qr","reminder","setthreshold","sha256","steal",
+      "sticky edit","sticky list","sticky remove","sticky set","tag create","tag delete","tag list","tag send","thresholds","messages daily",
+      "messages global","messages monthly","messages total","messages user","messages weekly","autowipe","editsnipe","imageonly add","imageonly list",
+      "imageonly remove","invite_info","voice disable","voice settings","voice setup","regexp-test","meme","stats","ai clear","embed","sanitize all",
+      "sanitize settings","sanitize setup","sanitize user","checkdev","ban","avatar","warn","kick","giveaway end","giveaway list","giveaway start",
+      "8ball","afk","autoresponder","choose","poll","profile avatar","trigger list","trigger remove","clear","adm logs","adm enable","adm status",
+      "adm unset","level add","level card","level event","level leaderboard","level rank","level remove","lock role","lock unlock","bdm force",
+      "bdm logs","bdm delete","bdm status","bdm disable","invite debug","invite disable","invite leaderboard","invite setup","pp","warnings",
+      "roles booster list","roles booster remove","roles bulk","roles color","roles create","roles delete","roles deletemenu","roles info","roles list",
+      "roles listmenus","roles massadd","roles members","roles reactionroles","anon","nuke","impersonate","antinuke logchannel","automod modules",
+      "antinuke punishment","antinuke recovery","antinuke status","antinuke whitelist manage","prefix","automod","trigger add","level settings",
+      "level up","logs setup","roles add","roles booster add"
+    ];
+
+    // ------------- Commands per category (a practical grouping; 'all' contains everything) -------------
+    const commandsMap = {
+      all: allCommands.slice(),
+
+      moderation: [
+        "ban","unban","kick","warn","nuke","impersonate","ghostping add","ghostping list","ghostping remove","cleanuser","cleanabots","untimeout","unmute","lock role","lock unlock"
+      ],
+
+      antinuke: [
+        "antinuke status","antinuke logchannel","antinuke punishment","antinuke recovery","antinuke whitelist manage",
+        "automod","automod modules","autowipe","autowipeuser","sanitize setup","sanitize settings","sanitize all","sanitize user"
+      ],
+
+      roles: [
+        "roles add","roles create","roles delete","roles bulk","roles massadd","roles massadd","roles members",
+        "roles info","roles list","roles listmenus","roles reactionroles","roles deletemenu","roles color",
+        "roles booster list","roles booster add","roles booster remove"
+      ],
+
+      logging: [
+        "logs setup","adm logs","adm enable","adm status","adm unset","logs","usage","editsnipe","adm logs","invite debug"
+      ],
+
+      levels: [
+        "level add","level remove","level event","level settings","level leaderboard","level rank","level card","level up",
+        "messages daily","messages weekly","messages monthly","messages total","messages global","messages user","stats"
+      ],
+
+      fun: [
+        "rps","dice","coinflip","8ball","meme","choose","poll","afk","pp","autoresponder"
+      ],
+
+      giveaways: [
+        "giveaway start","giveaway end","giveaway list"
+      ],
+
+      utility: [
+        "base64","sha256","qr","profile avatar","profile banner","avatar","myid","device","checkdev","botinfo","help","changelog","testemoji","invite_info","invite_debug","reminder","setthreshold","thresholds","activity","ai clear","embed"
+      ],
+
+      images: [
+        "imageonly add","imageonly list","imageonly remove","steal"
+      ],
+
+      stickies_tags: [
+        "sticky set","sticky edit","sticky list","sticky remove","tag create","tag delete","tag list","tag send"
+      ],
+
+      invites: [
+        "invites","invite_info","invite disable","invite leaderboard","invite setup","invite debug"
+      ],
+
+      voice: [
+        "voice setup","voice settings","voice disable"
+      ],
+
+      misc: [
+        "hackban","channel clone","channel create","channel delete","category clone","category create","category delete","announce",
+        "regexp-test","sanitize user","sanitize all","bdm force","bdm logs","bdm delete","bdm status","bdm disable","prefix","clear","anon","profile avatar"
+      ]
+    };
+
+    // ---------- Render sidebar categories ----------
+    const sidebar = document.getElementById('sidebar');
+    const cmdArea = document.getElementById('cmdArea');
+    const activeTitle = document.getElementById('activeTitle');
+    const activeSubtitle = document.getElementById('activeSubtitle');
+    const activeIcon = document.getElementById('activeIcon');
+    const searchInput = document.getElementById('search');
+
+    // make category button element
+    function makeCatButton(cat){
+      const el = document.createElement('div');
+      el.className = 'category-btn';
+      el.dataset.id = cat.id;
+      // icon via FontAwesome
+      const iconHtml = `<div class="cat-icon" aria-hidden="true">${cat.lottie ? `<lottie-player class="cat-lottie" src="${cat.lottie}" background="transparent" speed="1" loop autoplay></lottie-player>` : `<i class="fa-solid ${cat.icon}" style="font-size:20px;color:#e8d9ff"></i>`}</div>`;
+      el.innerHTML = `${iconHtml}<div><div class="cat-title">${cat.title}</div><div class="cat-sub">${cat.subtitle}</div></div>`;
+      el.addEventListener('click', ()=> setActive(cat.id));
+      el.tabIndex = 0;
+      el.addEventListener('keypress', (e)=> { if(e.key === 'Enter') el.click(); });
+      return el;
+    }
+
+    // add categories
+    categories.forEach(c => sidebar.appendChild(makeCatButton(c)));
+
+    // helper: copy to clipboard and show feedback
+    function copyCommandText(card, text){
+      navigator.clipboard?.writeText(text).then(()=>{
+        const desc = card.querySelector('.cmd-desc');
+        if(desc){ desc.innerText = 'Copied! — Invite at top'; }
+        setTimeout(()=> { if(desc) desc.innerText = 'Click to copy'; }, 900);
+      }).catch(()=> {
+        const desc = card.querySelector('.cmd-desc');
+        if(desc) desc.innerText = 'Copy blocked';
+      });
+    }
+
+    // render commands in the main area
+    function renderCommands(list){
+      cmdArea.innerHTML = '';
+      if(!list || !list.length){
+        cmdArea.innerHTML = '<div style="opacity:0.85">No commands in this category.</div>';
+        return;
+      }
+      list.forEach(cmd => {
+        const card = document.createElement('div');
+        card.className = 'cmd-card';
+        card.innerHTML = `<div class="cmd-name">${cmd}</div><div class="cmd-desc">Click to copy</div>`;
+        // click => copy the command name
+        card.addEventListener('click', (e)=>{
+          e.preventDefault();
+          copyCommandText(card, cmd);
+        });
+        // long-press / secondary-click: open invite? (not necessary; invite button exists)
+        cmdArea.appendChild(card);
+      });
+    }
+
+    // active category default is 'all'
+    let activeId = 'all';
+    function setActive(id){
+      activeId = id;
+      // highlight sidebar
+      [...sidebar.children].forEach(ch => ch.classList.toggle('active', ch.dataset.id === id));
+      const cat = categories.find(c => c.id === id) || categories[0];
+      activeTitle.innerText = cat.title;
+      activeSubtitle.innerText = cat.subtitle;
+      // big icon update (use FA icon or lottie if present)
+      if(cat.lottie){
+        activeIcon.innerHTML = `<lottie-player class="big-lottie" src="${cat.lottie}" background="transparent" speed="1" loop autoplay></lottie-player>`;
+      } else {
+        activeIcon.innerHTML = `<div style="font-size:30px;color:#fff"><i class="fa-solid ${cat.icon}"></i></div>`;
+      }
+      // show commands for this category
+      const list = commandsMap[id] || [];
+      // If 'all', use the complete list
+      if(id === 'all') renderCommands(commandsMap.all);
+      else renderCommands(list);
+    }
+
+    // wire search: filter across all commandsMap
+    searchInput.addEventListener('input', (e)=>{
+      const q = (e.target.value || '').trim().toLowerCase();
+      if(!q){
+        setActive(activeId);
+        return;
+      }
+      // build results grouping by category titles
+      const results = [];
+      Object.entries(commandsMap).forEach(([cat, arr])=>{
+        const matches = (arr||[]).filter(s => s.toLowerCase().includes(q));
+        if(matches.length) results.push({cat, matches});
+      });
+
+      activeTitle.innerText = `Search: "${q}"`;
+      activeSubtitle.innerText = `${results.reduce((a,b)=>a+b.matches.length,0)} result(s)`;
+
+      cmdArea.innerHTML = '';
+      if(!results.length){
+        cmdArea.innerHTML = '<div style="opacity:0.85">No matching commands found.</div>';
+        return;
+      }
+
+      results.forEach(r=>{
+        const header = document.createElement('div');
+        header.style.gridColumn = '1 / -1';
+        header.style.fontWeight = 900;
+        header.style.margin = '8px 0 6px';
+        header.innerText = (categories.find(c=>c.id===r.cat)?.title || r.cat);
+        cmdArea.appendChild(header);
+
+        const wrap = document.createElement('div');
+        wrap.style.display = 'grid';
+        wrap.style.gridTemplateColumns = 'repeat(auto-fill,minmax(220px,1fr))';
+        wrap.style.gap = '10px';
+
+        r.matches.forEach(m => {
+          const card = document.createElement('div');
+          card.className = 'cmd-card';
+          card.innerHTML = `<div class="cmd-name">${m}</div><div class="cmd-desc">Click to copy</div>`;
+          card.addEventListener('click', ()=> copyCommandText(card, m));
+          wrap.appendChild(card);
+        });
+        cmdArea.appendChild(wrap);
+      });
+    });
+
+    // Expand/Collapse helper buttons (visual)
+    document.getElementById('expandAll').addEventListener('click', ()=>{
+      [...sidebar.children].forEach(ch=> ch.classList.add('active'));
+    });
+    document.getElementById('collapseAll').addEventListener('click', ()=>{
+      [...sidebar.children].forEach(ch=> ch.classList.remove('active'));
+      setActive('all');
+    });
+
+    // keyboard nav
+    window.addEventListener('keydown', (e)=>{
+      if(e.key === 'f' && (e.ctrlKey || e.metaKey)){
+        e.preventDefault();
+        searchInput.focus();
+      }
+      if(['ArrowUp','ArrowDown'].includes(e.key)){
+        e.preventDefault();
+        const idx = categories.findIndex(c=> c.id === activeId);
+        const next = e.key === 'ArrowDown' ? Math.min(categories.length-1, idx+1) : Math.max(0, idx-1);
+        setActive(categories[next].id);
+      }
+    });
+
+    // accessibility: make sidebar buttons focusable already done in makeCatButton
+
+    // initial rendering
+    setActive('all');
+
+    // add total count in footer? could be added if needed
+  </script>
+</body>
+</html>
