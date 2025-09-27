@@ -14,9 +14,8 @@
     *{box-sizing:border-box}
     html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:#000;color:#efe9ff}
     body{
-      /* Put your galaxy image filename here in the same folder */
       background: radial-gradient(ellipse at center, rgba(0,0,0,0.35), rgba(0,0,0,0.6)),
-                  url('C1A7E1F3-7712-4EF5-B609-D942681318AD.jpeg') center/cover no-repeat;
+                  url('galaxy.jpeg') center/cover no-repeat;
       -webkit-font-smoothing:antialiased;
       padding:28px; display:flex; align-items:flex-start; justify-content:center;
     }
@@ -42,7 +41,7 @@
     h1{ margin:0; font-size:20px; letter-spacing:0.4px; color:#fff }
     .lead{ margin:0; opacity:0.85; font-size:13px }
 
-    /* Invite button top-right */
+    /* Invite button */
     .top-actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
     .invite-btn{
       display:inline-flex; gap:10px; align-items:center; padding:10px 14px;
@@ -173,22 +172,22 @@
   </div>
 
   <script>
-    // ------------- Categories (icons & small Lottie placeholders) -------------
+    // ------------- Categories (icons) -------------
     const categories = [
-      { id: 'all', title: 'All Commands', icon: 'fa-list', subtitle: 'Every command you provided', lottie: null },
-      { id: 'moderation', title: 'Moderation', icon: 'fa-gavel', subtitle: 'ban, kick, warns, nuke, impersonate', lottie: null },
-      { id: 'antinuke', title: 'Antinuke & Automod', icon: 'fa-shield-halved', subtitle: 'antinuke, automod, sanitize, autowipe', lottie: null },
-      { id: 'roles', title: 'Roles', icon: 'fa-users-gear', subtitle: 'roles, boosters, mass operations', lottie: null },
-      { id: 'logging', title: 'Logging & Admin', icon: 'fa-file-lines', subtitle: 'adm logs, logs setup, usage', lottie: null },
-      { id: 'levels', title: 'Levels & Stats', icon: 'fa-chart-line', subtitle: 'XP, leaderboards, messages stats', lottie: null },
-      { id: 'fun', title: 'Fun & Social', icon: 'fa-dice', subtitle: 'rps, dice, coinflip, meme', lottie: null },
-      { id: 'giveaways', title: 'Giveaways', icon: 'fa-gift', subtitle: 'start, end, list', lottie: null },
-      { id: 'utility', title: 'Utility & Tools', icon: 'fa-wrench', subtitle: 'base64, sha256, qr, profile', lottie: null },
-      { id: 'images', title: 'Image & Attach', icon: 'fa-image', subtitle: 'imageonly, steal, embed', lottie: null },
-      { id: 'stickies_tags', title: 'Stickies & Tags', icon: 'fa-thumbtack', subtitle: 'sticky & tag system', lottie: null },
-      { id: 'invites', title: 'Invites & Leaderboards', icon: 'fa-user-plus', subtitle: 'invite tracking & leaderboards', lottie: null },
-      { id: 'voice', title: 'Voice & VC', icon: 'fa-headset', subtitle: 'voice setup & settings', lottie: null },
-      { id: 'misc', title: 'Misc & Advanced', icon: 'fa-gear', subtitle: 'misc developer tools', lottie: null }
+      { id: 'all', title: 'All Commands', icon: 'fa-list', subtitle: 'Every command you provided' },
+      { id: 'moderation', title: 'Moderation', icon: 'fa-gavel', subtitle: 'ban, kick, warns, nuke, impersonate' },
+      { id: 'antinuke', title: 'Antinuke & Automod', icon: 'fa-shield-halved', subtitle: 'antinuke, automod, sanitize, autowipe' },
+      { id: 'roles', title: 'Roles', icon: 'fa-users-gear', subtitle: 'roles, boosters, mass operations' },
+      { id: 'logging', title: 'Logging & Admin', icon: 'fa-file-lines', subtitle: 'adm logs, logs setup, usage' },
+      { id: 'levels', title: 'Levels & Stats', icon: 'fa-chart-line', subtitle: 'XP, leaderboards, messages stats' },
+      { id: 'fun', title: 'Fun & Social', icon: 'fa-dice', subtitle: 'rps, dice, coinflip, meme' },
+      { id: 'giveaways', title: 'Giveaways', icon: 'fa-gift', subtitle: 'start, end, list' },
+      { id: 'utility', title: 'Utility & Tools', icon: 'fa-wrench', subtitle: 'base64, sha256, qr, profile' },
+      { id: 'images', title: 'Image & Attach', icon: 'fa-image', subtitle: 'imageonly, steal, embed' },
+      { id: 'stickies_tags', title: 'Stickies & Tags', icon: 'fa-thumbtack', subtitle: 'sticky & tag system' },
+      { id: 'invites', title: 'Invites & Leaderboards', icon: 'fa-user-plus', subtitle: 'invite tracking & leaderboards' },
+      { id: 'voice', title: 'Voice & VC', icon: 'fa-headset', subtitle: 'voice setup & settings' },
+      { id: 'misc', title: 'Misc & Advanced', icon: 'fa-gear', subtitle: 'misc developer tools' }
     ];
 
     // ------------- Full command list (all commands you provided) -------------
@@ -209,7 +208,7 @@
       "level up","logs setup","roles add","roles booster add"
     ];
 
-    // ------------- Commands per category (a practical grouping; 'all' contains everything) -------------
+    // ------------- Commands per category (grouping) -------------
     const commandsMap = {
       all: allCommands.slice(),
 
@@ -284,8 +283,7 @@
       const el = document.createElement('div');
       el.className = 'category-btn';
       el.dataset.id = cat.id;
-      // icon via FontAwesome
-      const iconHtml = `<div class="cat-icon" aria-hidden="true">${cat.lottie ? `<lottie-player class="cat-lottie" src="${cat.lottie}" background="transparent" speed="1" loop autoplay></lottie-player>` : `<i class="fa-solid ${cat.icon}" style="font-size:20px;color:#e8d9ff"></i>`}</div>`;
+      const iconHtml = `<div class="cat-icon" aria-hidden="true"><i class="fa-solid ${cat.icon}" style="font-size:20px;color:#e8d9ff"></i></div>`;
       el.innerHTML = `${iconHtml}<div><div class="cat-title">${cat.title}</div><div class="cat-sub">${cat.subtitle}</div></div>`;
       el.addEventListener('click', ()=> setActive(cat.id));
       el.tabIndex = 0;
@@ -319,12 +317,10 @@
         const card = document.createElement('div');
         card.className = 'cmd-card';
         card.innerHTML = `<div class="cmd-name">${cmd}</div><div class="cmd-desc">Click to copy</div>`;
-        // click => copy the command name
         card.addEventListener('click', (e)=>{
           e.preventDefault();
           copyCommandText(card, cmd);
         });
-        // long-press / secondary-click: open invite? (not necessary; invite button exists)
         cmdArea.appendChild(card);
       });
     }
@@ -333,32 +329,19 @@
     let activeId = 'all';
     function setActive(id){
       activeId = id;
-      // highlight sidebar
       [...sidebar.children].forEach(ch => ch.classList.toggle('active', ch.dataset.id === id));
       const cat = categories.find(c => c.id === id) || categories[0];
       activeTitle.innerText = cat.title;
       activeSubtitle.innerText = cat.subtitle;
-      // big icon update (use FA icon or lottie if present)
-      if(cat.lottie){
-        activeIcon.innerHTML = `<lottie-player class="big-lottie" src="${cat.lottie}" background="transparent" speed="1" loop autoplay></lottie-player>`;
-      } else {
-        activeIcon.innerHTML = `<div style="font-size:30px;color:#fff"><i class="fa-solid ${cat.icon}"></i></div>`;
-      }
-      // show commands for this category
-      const list = commandsMap[id] || [];
-      // If 'all', use the complete list
+      activeIcon.innerHTML = `<div style="font-size:30px;color:#fff"><i class="fa-solid ${cat.icon}"></i></div>`;
       if(id === 'all') renderCommands(commandsMap.all);
-      else renderCommands(list);
+      else renderCommands(commandsMap[id] || []);
     }
 
-    // wire search: filter across all commandsMap
+    // search
     searchInput.addEventListener('input', (e)=>{
       const q = (e.target.value || '').trim().toLowerCase();
-      if(!q){
-        setActive(activeId);
-        return;
-      }
-      // build results grouping by category titles
+      if(!q){ setActive(activeId); return; }
       const results = [];
       Object.entries(commandsMap).forEach(([cat, arr])=>{
         const matches = (arr||[]).filter(s => s.toLowerCase().includes(q));
@@ -369,10 +352,7 @@
       activeSubtitle.innerText = `${results.reduce((a,b)=>a+b.matches.length,0)} result(s)`;
 
       cmdArea.innerHTML = '';
-      if(!results.length){
-        cmdArea.innerHTML = '<div style="opacity:0.85">No matching commands found.</div>';
-        return;
-      }
+      if(!results.length){ cmdArea.innerHTML = '<div style="opacity:0.85">No matching commands found.</div>'; return; }
 
       results.forEach(r=>{
         const header = document.createElement('div');
@@ -398,7 +378,7 @@
       });
     });
 
-    // Expand/Collapse helper buttons (visual)
+    // Expand/Collapse helpers
     document.getElementById('expandAll').addEventListener('click', ()=>{
       [...sidebar.children].forEach(ch=> ch.classList.add('active'));
     });
@@ -409,10 +389,7 @@
 
     // keyboard nav
     window.addEventListener('keydown', (e)=>{
-      if(e.key === 'f' && (e.ctrlKey || e.metaKey)){
-        e.preventDefault();
-        searchInput.focus();
-      }
+      if(e.key === 'f' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); searchInput.focus(); }
       if(['ArrowUp','ArrowDown'].includes(e.key)){
         e.preventDefault();
         const idx = categories.findIndex(c=> c.id === activeId);
@@ -421,12 +398,8 @@
       }
     });
 
-    // accessibility: make sidebar buttons focusable already done in makeCatButton
-
-    // initial rendering
+    // initial render
     setActive('all');
-
-    // add total count in footer? could be added if needed
   </script>
 </body>
 </html>
